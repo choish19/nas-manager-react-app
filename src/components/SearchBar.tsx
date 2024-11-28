@@ -2,7 +2,12 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const SearchBar = ({ searchQuery, setSearchQuery }) => {
+interface SearchBarProps {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({ searchQuery, setSearchQuery }) => {
   return (
     <div className="bg-white border-b p-4 sticky top-0 z-10 backdrop-blur-sm bg-white/80">
       <motion.div
