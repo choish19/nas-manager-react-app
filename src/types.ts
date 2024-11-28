@@ -19,8 +19,8 @@ export interface ViewerProps {
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
   content: string;
+  sender: string;
   timestamp: number;
 }
 

@@ -22,7 +22,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
             file.name.toLowerCase().includes(query.toLowerCase()) ||
             file.tags?.some(tag => tag.toLowerCase().includes(query.toLowerCase()))
           )
-          .map(file => `- ${file.name} (${file.type})\n  ${file.description || ''}\n  태그: ${file.tags?.join(', ') || '없음'}`)
+          .map(file => `- ${file.name} (${file.type})\n  태그: ${file.tags?.join(', ') || '없음'}`)
           .join('\n\n')}`
       : '죄송합니다. 관련된 파일을 찾을 수 없습니다.';
 
@@ -34,13 +34,13 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
     if (!input.trim()) return;
 
     addChatMessage({
-      role: 'user',
+      sender: 'user',
       content: input
     });
 
     const response = analyzeFile(input);
     addChatMessage({
-      role: 'assistant',
+      sender: 'assistant',
       content: response
     });
 
@@ -64,12 +64,12 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
           <div
             key={message.id}
             className={`flex ${
-              message.role === 'user' ? 'justify-end' : 'justify-start'
+              message.sender === 'user' ? 'justify-end' : 'justify-start'
             }`}
           >
             <div
               className={`max-w-[80%] rounded-lg p-3 ${
-                message.role === 'user'
+                message.sender === 'user'
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-900'
               }`}
