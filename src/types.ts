@@ -1,14 +1,13 @@
 export interface FileType {
   id: number;
   name: string;
-  type: 'video' | 'music' | 'document' | 'image';
-  thumbnail: string;
+  type: string;
+  thumbnail?: string;
   lastAccessed: string;
-  url: string;
-  bookmarked?: boolean;
+  url?: string;
+  bookmarked: boolean;
   accessCount: number;
   recommendations: number;
-  description?: string;
   tags?: string[];
 }
 
@@ -23,4 +22,16 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+}
+
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  settings: {
+    darkMode: boolean;
+    autoPlay: boolean;
+    defaultView: 'grid' | 'list';
+  };
 }

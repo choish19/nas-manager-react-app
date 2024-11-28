@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
@@ -14,7 +14,13 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 function App() {
-  const { settings, user } = useStore();
+  const { user, fetchUser } = useStore();
+
+  useEffect(() => {
+    if (!user) {
+      fetchUser();
+    }
+  }, [user, fetchUser]);
 
   if (!user) {
     return (
@@ -29,7 +35,7 @@ function App() {
 
   return (
     <Router>
-      <div className={`flex h-screen ${settings.darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
+      <div className={`flex h-screen ${user.settings.darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
         <Sidebar />
         <main className="flex-1 overflow-hidden">
           <Routes>

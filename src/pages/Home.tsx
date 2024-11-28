@@ -8,10 +8,10 @@ import ChatBot from '../components/ChatBot';
 import { MessageCircle } from 'lucide-react';
 
 const Home = () => {
-  const { files, toggleBookmark, incrementAccessCount, fetchFiles } = useStore();
+  const { files, toggleBookmark, incrementAccessCount, fetchFiles, user } = useStore();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showChat, setShowChat] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.settings.defaultView ?? 'grid');
 
   useEffect(() => {
     fetchFiles();
