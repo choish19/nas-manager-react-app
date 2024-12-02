@@ -2,6 +2,7 @@ import React from 'react';
 import { Video, Music, FileText, Image, Bookmark, BookmarkCheck } from 'lucide-react';
 import { FileType } from '../types';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 interface FileListProps {
   files: FileType[];
@@ -10,6 +11,8 @@ interface FileListProps {
 }
 
 const FileList: React.FC<FileListProps> = ({ files, onFileSelect, onToggleBookmark }) => {
+  const navigate = useNavigate();
+
   const getDefaultThumbnail = (type: string) => {
     switch (type) {
       case 'video':
@@ -65,6 +68,7 @@ const FileList: React.FC<FileListProps> = ({ files, onFileSelect, onToggleBookma
           className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-out hover:-translate-y-1 group flex items-center"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => navigate(`/file/${file.id}`)}
         >
           <div 
             className="w-24 h-24 bg-gray-100 rounded-l-lg relative overflow-hidden cursor-pointer flex-shrink-0"

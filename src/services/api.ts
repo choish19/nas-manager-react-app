@@ -34,6 +34,8 @@ export const files = {
   removeBookmark: (fileId: number) => api.delete(`/files/${fileId}/bookmark`),
   incrementRecommendations: (fileId: number) => api.put(`/files/${fileId}/recommend`),
   incrementAccessCount: (fileId: number) => api.post(`/files/${fileId}/access-count`),
+  getFileDetail: (fileId: number) => api.get(`/files/${fileId}`),
+  getRecommendedFiles: (fileId: number) => api.get(`/files/${fileId}/recommended`),
 };
 
 export const user = {

@@ -2,6 +2,7 @@ import React from 'react';
 import { Video, Music, FileText, Image, Bookmark, BookmarkCheck } from 'lucide-react';
 import { FileType } from '../types';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 interface FileGridProps {
   files: FileType[];
@@ -10,6 +11,8 @@ interface FileGridProps {
 }
 
 const FileGrid: React.FC<FileGridProps> = ({ files, onFileSelect, onToggleBookmark }) => {
+  const navigate = useNavigate();
+
   const getDefaultThumbnail = (type: string) => {
     switch (type) {
       case 'video':
@@ -65,6 +68,7 @@ const FileGrid: React.FC<FileGridProps> = ({ files, onFileSelect, onToggleBookma
           className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 ease-out hover:-translate-y-1 group"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={() => navigate(`/file/${file.id}`)}
         >
           <div 
             className="aspect-video bg-gray-100 rounded-t-lg relative overflow-hidden cursor-pointer"
