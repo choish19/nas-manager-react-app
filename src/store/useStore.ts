@@ -17,6 +17,7 @@ interface StoreState {
   addChatMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
   fetchFiles: () => void;
   fetchUser: () => void;
+  logout: () => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -124,6 +125,14 @@ export const useStore = create<StoreState>()(
         } catch (error) {
           console.error('Failed to fetch user:', error);
         }
+      },
+      logout: () => {
+        set({
+          user: null,
+          viewHistory: [],
+          chatHistory: [],
+        });
+        localStorage.removeItem('token');
       },
     }),
     {

@@ -22,29 +22,18 @@ function App() {
     }
   }, [user, fetchUser]);
 
-  if (!user) {
-    return (
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Router>
-    );
-  }
-
   return (
     <Router>
-      <div className={`flex h-screen ${user.setting.darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
-        <Sidebar />
+      <div className={`flex h-screen ${user?.setting.darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
+        {user && <Sidebar />}
         <main className="flex-1 overflow-hidden">
           <Routes>
             <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
             <Route path="/bookmarks" element={<PrivateRoute><Bookmarks /></PrivateRoute>} />
             <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
             <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            {!user && <Route path="/login" element={<Login />} />}
+            <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
           </Routes>
         </main>
       </div>

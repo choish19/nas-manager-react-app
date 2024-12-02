@@ -3,7 +3,7 @@ import { useStore } from '../store/useStore';
 import { Moon, Sun, Grid, List, Play } from 'lucide-react';
 
 const Settings = () => {
-  const { user, updateUserSettings } = useStore();
+  const { user, updateUserSettings, logout } = useStore();
 
   return (
     <div className="h-full flex flex-col p-6">
@@ -64,6 +64,13 @@ const Settings = () => {
                 <option value="list">리스트</option>
               </select>
             </div>
+
+            <button
+              onClick={logout}
+              className="mt-6 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+            >
+              로그아웃
+            </button>
           </div>
         </div>
       </div>
