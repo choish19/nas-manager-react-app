@@ -29,9 +29,10 @@ export const files = {
   getAll: () => api.get('/files'),
   addToHistory: (fileId: number) => api.post(`/files/${fileId}/history`),
   upload: (formData: FormData) => api.post('/files', formData),
-  download: (id: number) => api.get(`/files/${id}`),
-  toggleBookmark: (id: number) => api.put(`/files/${id}/bookmark`),
-  incrementRecommendations: (id: number) => api.put(`/files/${id}/recommend`),
+  download: (fileId: number) => api.get(`/files/${fileId}`),
+  addBookmark: (fileId: number) => api.post(`/files/${fileId}/bookmark`),
+  removeBookmark: (fileId: number) => api.delete(`/files/${fileId}/bookmark`),
+  incrementRecommendations: (fileId: number) => api.put(`/files/${fileId}/recommend`),
   incrementAccessCount: (fileId: number) => api.post(`/files/${fileId}/access-count`),
 };
 

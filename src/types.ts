@@ -6,6 +6,7 @@ export interface FileType {
   lastAccessed: string;
   url?: string;
   bookmarked: boolean;
+  bookmarkCount: number;
   accessCount: number;
   recommendations: number;
   tags?: string[];

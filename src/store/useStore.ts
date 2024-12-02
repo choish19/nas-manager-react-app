@@ -22,7 +22,7 @@ interface StoreState {
 
 export const useStore = create<StoreState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       files: [],
       viewHistory: [],
@@ -61,7 +61,13 @@ export const useStore = create<StoreState>()(
       },
       toggleBookmark: async (fileId) => {
         try {
-          await apiFiles.toggleBookmark(fileId);
+          const currentState = get();
+          const file = currentState.files.find((f: FileType) => f.id === fileId);
+          if(file?.bookmarked) {
+            await apiFiles.removeBookmark(fileId);
+          } else {
+            await apiFiles.addBookmark(fileId);
+          }
           set((state) => ({
             files: state.files.map((file) =>
               file.id === fileId ? { ...file, bookmarked: !file.bookmarked } : file
