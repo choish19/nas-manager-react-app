@@ -16,13 +16,13 @@ const Settings = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {user?.settings.darkMode ? <Moon className="text-indigo-600" /> : <Sun className="text-indigo-600" />}
+                {user?.setting.darkMode ? <Moon className="text-indigo-600" /> : <Sun className="text-indigo-600" />}
                 <span>다크 모드</span>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={user?.settings.darkMode}
+                  checked={user?.setting.darkMode}
                   onChange={(e) => updateUserSettings({ darkMode: e.target.checked })}
                   className="sr-only peer"
                 />
@@ -38,7 +38,7 @@ const Settings = () => {
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={user?.settings.autoPlay}
+                  checked={user?.setting.autoPlay}
                   onChange={(e) => updateUserSettings({ autoPlay: e.target.checked })}
                   className="sr-only peer"
                 />
@@ -48,7 +48,7 @@ const Settings = () => {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {user?.settings.defaultView === 'grid' ? (
+                {user?.setting.defaultView === 'grid' ? (
                   <Grid className="text-indigo-600" />
                 ) : (
                   <List className="text-indigo-600" />
@@ -56,7 +56,7 @@ const Settings = () => {
                 <span>기본 보기 방식</span>
               </div>
               <select
-                value={user?.settings.defaultView}
+                value={user?.setting.defaultView}
                 onChange={(e) => updateUserSettings({ defaultView: e.target.value as 'grid' | 'list' })}
                 className="block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               >

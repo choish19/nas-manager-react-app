@@ -29,7 +29,7 @@ export interface User {
   id: number;
   username: string;
   email: string;
-  settings: {
+  setting: {
     darkMode: boolean;
     autoPlay: boolean;
     defaultView: 'grid' | 'list';

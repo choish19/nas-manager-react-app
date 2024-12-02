@@ -11,7 +11,7 @@ const Home = () => {
   const { files, toggleBookmark, incrementAccessCount, fetchFiles, user } = useStore();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showChat, setShowChat] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.settings.defaultView ?? 'grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.setting.defaultView ?? 'grid');
 
   useEffect(() => {
     fetchFiles();

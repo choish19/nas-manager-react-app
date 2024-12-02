@@ -4,7 +4,7 @@ import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Bookmarks from './pages/Bookmarks';
 import History from './pages/History';
-import Settings from './pages/Settings';
+import Settings from './pages/Setting';
 import Login from './pages/Login';
 import { useStore } from './store/useStore';
 
@@ -35,7 +35,7 @@ function App() {
 
   return (
     <Router>
-      <div className={`flex h-screen ${user.settings.darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
+      <div className={`flex h-screen ${user.setting.darkMode ? 'dark bg-gray-900' : 'bg-gray-100'}`}>
         <Sidebar />
         <main className="flex-1 overflow-hidden">
           <Routes>

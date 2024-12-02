@@ -9,7 +9,7 @@ interface StoreState {
   viewHistory: number[];
   chatHistory: ChatMessage[];
   setUser: (user: User | null) => void;
-  updateUserSettings: (settings: Partial<User['settings']>) => void;
+  updateUserSettings: (settings: Partial<User['setting']>) => void;
   addToHistory: (fileId: number) => void;
   toggleBookmark: (fileId: number) => void;
   incrementAccessCount: (fileId: number) => void;
@@ -39,9 +39,9 @@ export const useStore = create<StoreState>()(
       updateUserSettings: async (newSettings) => {
         try {
           if (newSettings) {
-            await apiUser.updateSettings(newSettings);
+            await apiUser.updateSetting(newSettings);
             set((state) => ({
-              user: state.user ? { ...state.user, settings: { ...state.user.settings, ...newSettings } } : null,
+              user: state.user ? { ...state.user, setting: { ...state.user.setting, ...newSettings } } : null,
             }));
           }
         } catch (error) {

@@ -36,13 +36,13 @@ export const files = {
 };
 
 export const user = {
-  get: () => api.get('/api/user'),
-  update: (user: User) => api.put('/api/user', user),   
-  updateSettings: (settings: Partial<User['settings']>) => api.put('/api/user/settings', settings),
+  get: () => api.get('/user'),
+  update: (user: User) => api.put('/user', user),   
+  updateSetting: (setting: Partial<User['setting']>) => api.put('/user/setting', setting),
 }; 
 
 export const chat = {
-  addMessage: (message: ChatMessage) => api.post('/api/chat/messages', message),
+  addMessage: (message: ChatMessage) => api.post('/chat/messages', message),
 }; 
 
 export default api;
