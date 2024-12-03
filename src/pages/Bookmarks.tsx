@@ -1,9 +1,36 @@
+import { useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import FileGrid from '../components/FileGrid';
+import { FileType } from '../types';
+import { files as apiFiles } from '../services/api';
 
 const Bookmarks = () => {
-  const { files, toggleBookmark } = useStore();
-  const bookmarkedFiles = files.filter((file) => file.bookmarked);
+  const { toggleBookmark } = useStore();
+  const [bookmarkedFiles, setBookmarkedFiles] = useState<FileType[]>([]);
+
+  useEffect(() => {
+    apiFiles.getBookmarks()
+      .then(response => setBookmarkedFiles(response.data));
+  }, []);
+
+  const handleToggleBookmark = (fileId: number) => {
+    const file = bookmarkedFiles.find(f => f.id === fileId);
+    if (file?.bookmarked) {
+      apiFiles.removeBookmark(fileId)
+        .then(() => {
+          toggleBookmark(fileId);
+          setBookmarkedFiles(prev => prev.filter(f => f.id !== fileId));
+        });
+    } else {
+      apiFiles.addBookmark(fileId)
+        .then(() => {
+          toggleBookmark(fileId);
+          setBookmarkedFiles(prev => prev.map(f => 
+            f.id === fileId ? { ...f, bookmarked: true } : f
+          ));
+        });
+    }
+  };
 
   return (
     <div className="h-full flex flex-col p-6">
@@ -15,8 +42,8 @@ const Bookmarks = () => {
       ) : (
         <FileGrid
           files={bookmarkedFiles}
-          onFileSelect={(file) => useStore.getState().addToHistory(file.id)}
-          onToggleBookmark={toggleBookmark}
+          onFileSelect={(file) => useStore.getState().watch(file.id)}
+          onToggleBookmark={handleToggleBookmark}
         />
       )}
     </div>
