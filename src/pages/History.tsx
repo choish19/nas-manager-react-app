@@ -10,6 +10,19 @@ const History = () => {
   const { toggleBookmark } = useStore();
   const [historyFiles, setHistoryFiles] = useState<Dictionary<FileType[]>>({});
 
+  const handleToggleBookmark = (fileId: number) => {
+    toggleBookmark(fileId);
+    setHistoryFiles((prevFiles) => {
+      const updatedFiles = { ...prevFiles };
+      for (const month in updatedFiles) {
+        updatedFiles[month] = updatedFiles[month].map(file =>
+          file.id === fileId ? { ...file, bookmarked: !file.bookmarked } : file
+        );
+      }
+      return updatedFiles;
+    });
+  };
+
   useEffect(() => {
     apiFiles.getHistory()
       .then(response => {
@@ -38,7 +51,7 @@ const History = () => {
             <FileGrid
               files={files}
               onFileSelect={(file) => useStore.getState().watch(file.id)}
-              onToggleBookmark={toggleBookmark}
+              onToggleBookmark={handleToggleBookmark}
             />
           </div>
         ))
