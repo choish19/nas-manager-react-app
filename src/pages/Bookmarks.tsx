@@ -3,7 +3,7 @@ import { useStore } from '../store/useStore';
 import { FileType } from '../types';
 import { files as apiFiles } from '../services/api';
 import { motion } from 'framer-motion';
-import BookmarkStats from '../components/BookMarkStats';
+import BookmarkStats from '../components/BookmarkStats';
 import BookmarkCategories from '../components/BookmarkCategories';
 import FileGrid from '../components/FileGrid';
 import { groupBy } from 'lodash';
