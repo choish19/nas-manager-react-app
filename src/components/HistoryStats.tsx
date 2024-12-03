@@ -1,13 +1,17 @@
 import React from 'react';
 import { FileType } from '../types';
-import { Clock, Calendar, Film, Music, FileText } from 'lucide-react';
+import { Clock, Film, Music, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useStore } from '../store/useStore';
 
 interface HistoryStatsProps {
   files: FileType[];
 }
 
 const HistoryStats: React.FC<HistoryStatsProps> = ({ files }) => {
+  const { user } = useStore();
+  const isDarkMode = user?.setting.darkMode;
+
   const stats = React.useMemo(() => {
     const totalFiles = files.length;
     const typeCount = files.reduce((acc, file) => {
@@ -41,15 +45,25 @@ const HistoryStats: React.FC<HistoryStatsProps> = ({ files }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: index * 0.1 }}
-          className="bg-white rounded-xl p-4 shadow-sm backdrop-blur-sm bg-white/90"
+          className={`rounded-xl p-4 backdrop-blur-sm ${
+            isDarkMode ? 'bg-gray-800/80' : 'bg-white'
+          }`}
         >
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-50 rounded-lg">
-              <item.icon className="text-indigo-600" size={20} />
+            <div className={`p-2 rounded-lg ${
+              isDarkMode ? 'bg-indigo-500/10' : 'bg-indigo-50'
+            }`}>
+              <item.icon className="text-indigo-500" size={20} />
             </div>
             <div>
-              <p className="text-sm text-gray-500">{item.label}</p>
-              <p className="text-xl font-semibold text-gray-800">
+              <p className={`text-sm ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                {item.label}
+              </p>
+              <p className={`text-xl font-semibold ${
+                isDarkMode ? 'text-gray-100' : 'text-gray-800'
+              }`}>
                 {item.value}
               </p>
             </div>

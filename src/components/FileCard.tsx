@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { FileType } from '../types';
 import { FileIcon } from './FileIcon';
 import { BookmarkButton } from './BookmarkButton';
 import { formatDate } from '../utils/dateUtils';
+import { FileType } from '../types';
+import { useStore } from '../store/useStore';
 
 interface FileCardProps {
   file: FileType;
@@ -13,27 +13,30 @@ interface FileCardProps {
 }
 
 export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBookmark }) => {
-  const navigate = useNavigate();
-
-  const handleClick = () => {
-    onSelect(file);
-    navigate(`/file/${file.id}`);
-  };
+  const { user } = useStore();
+  const isDarkMode = user?.setting.darkMode;
 
   return (
     <motion.div
-      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 ease-out group overflow-hidden cursor-pointer"
-      whileHover={{ y: -4, scale: 1.02 }}
+      className={`rounded-xl overflow-hidden cursor-pointer group ${
+        isDarkMode 
+          ? 'bg-gray-800/80 hover:bg-gray-700/60' 
+          : 'bg-white hover:bg-gray-50'
+      } transition-all duration-200`}
+      whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
-      onClick={handleClick}
+      onClick={() => onSelect(file)}
     >
-      <div className="relative aspect-video bg-gradient-to-br from-gray-50 to-gray-100 p-6 flex items-center justify-center">
-        <FileIcon 
-          filename={file.name}
-          size={64}
-          className="transform transition-transform duration-300 group-hover:scale-110"
-        />
-        <div className="absolute top-2 right-2">
+      <div className={`relative aspect-video p-6 flex items-center justify-center ${
+        isDarkMode ? 'bg-gray-900/40' : 'bg-gray-50'
+      }`}>
+        <div className="transform transition-transform duration-300 group-hover:scale-110">
+          <FileIcon 
+            filename={file.name}
+            size={48}
+          />
+        </div>
+        <div className="absolute top-2 right-2 z-10">
           <BookmarkButton
             isBookmarked={file.bookmarked}
             onClick={(e) => {
@@ -45,13 +48,17 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
       </div>
       
       <div className="p-4">
-        <h3 className="font-medium text-gray-900 truncate mb-1">{file.name}</h3>
-        <div className="space-y-2">
-          <p className="text-sm text-gray-500">
+        <h3 className={`font-medium truncate mb-1 ${
+          isDarkMode ? 'text-gray-200' : 'text-gray-900'
+        }`}>
+          {file.name}
+        </h3>
+        <div className="space-y-1">
+          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
             최근 접근: {formatDate(file.lastAccessed)}
           </p>
           {file.watchedAt && (
-            <p className="text-sm text-gray-500">
+            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               시청 일시: {formatDate(file.watchedAt)}
             </p>
           )}
@@ -60,7 +67,11 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
               {file.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="inline-block px-2 py-0.5 text-xs font-medium bg-indigo-50 text-indigo-600 rounded-full"
+                  className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
+                    isDarkMode 
+                      ? 'bg-indigo-900/30 text-indigo-300' 
+                      : 'bg-indigo-50 text-indigo-600'
+                  }`}
                 >
                   {tag}
                 </span>

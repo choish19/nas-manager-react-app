@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FileIcon } from './FileIcon';
 import { FileType } from '../types';
+import { useStore } from '../store/useStore';
 
 interface FileTypeFilterProps {
   selectedType: string;
@@ -14,6 +15,9 @@ export const FileTypeFilter: React.FC<FileTypeFilterProps> = ({
   onTypeSelect,
   files,
 }) => {
+  const { user } = useStore();
+  const isDarkMode = user?.setting.darkMode;
+  
   const fileTypes = ['all', 'document', 'video', 'audio', 'image', 'archive'];
   const typeLabels: Record<string, string> = {
     all: '전체',
@@ -51,7 +55,9 @@ export const FileTypeFilter: React.FC<FileTypeFilterProps> = ({
             transition-colors duration-200
             ${selectedType === type
               ? 'bg-indigo-600 text-white'
-              : 'bg-white text-gray-600 hover:bg-gray-50'
+              : isDarkMode
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                : 'bg-white text-gray-600 hover:bg-gray-50'
             }
           `}
           whileTap={{ scale: 0.97 }}
@@ -63,7 +69,9 @@ export const FileTypeFilter: React.FC<FileTypeFilterProps> = ({
             transition-colors duration-200
             ${selectedType === type
               ? 'bg-indigo-500 text-white'
-              : 'bg-gray-100 text-gray-600'
+              : isDarkMode
+                ? 'bg-gray-700 text-gray-300'
+                : 'bg-gray-100 text-gray-600'
             }
           `}>
             {getTypeCount(type)}
