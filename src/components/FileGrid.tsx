@@ -13,16 +13,23 @@ interface FileGridProps {
 const FileGrid: React.FC<FileGridProps> = ({ files, onFileSelect, onToggleBookmark }) => {
   const navigate = useNavigate();
 
-  const getDefaultThumbnail = (type: string) => {
-    switch (type) {
-      case 'video':
-        return 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=400&q=80';
-      case 'music':
-        return 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=400&q=80';
-      case 'image':
-        return 'https://images.unsplash.com/photo-1552168324-d612d77725e3?auto=format&fit=crop&w=400&q=80';
+  const getDefaultThumbnail = (fileName: string) => {
+    const extension = fileName.split('.').pop();
+    switch (extension) {
+      case 'mp4':
+        return '/src/assets/images/thumbnails/video.png';
+      case 'mp3':
+        return '/src/assets/images/thumbnails/music.png';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+        return '/src/assets/images/thumbnails/image.png';
+      case 'docx':
+        return '/src/assets/images/thumbnails/docx.png';
+      case 'pdf':
+        return '/src/assets/images/thumbnails/pdf.png';
       default:
-        return 'https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&w=400&q=80';
+        return '/src/assets/images/thumbnails/default.png';
     }
   };
 
@@ -75,9 +82,9 @@ const FileGrid: React.FC<FileGridProps> = ({ files, onFileSelect, onToggleBookma
             onClick={() => onFileSelect(file)}
           >
             <img
-              src={file.thumbnail || getDefaultThumbnail(file.type)}
+              src={file.thumbnail || getDefaultThumbnail(file.name)}
               alt={file.name}
-              className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+              className="w-3/4 h-3/4 object-contain mx-auto mt-4 transform transition-transform duration-300 group-hover:scale-105"
             />
             <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full shadow-lg">
               {getIcon(file.type)}
@@ -105,6 +112,11 @@ const FileGrid: React.FC<FileGridProps> = ({ files, onFileSelect, onToggleBookma
             <p className="text-sm text-gray-500 mt-1">
               최근 접근: {file.lastAccessed}
             </p>
+            {file.watchedAt && (
+              <p className="text-sm text-gray-500 mt-1">
+                시청 일시: {file.watchedAt}
+              </p>
+            )}
             {file.tags && file.tags.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1">
                 {file.tags.map((tag, index) => (
