@@ -16,40 +16,19 @@ interface FileListProps {
 const FileList: React.FC<FileListProps> = ({ files, onFileSelect, onToggleBookmark }) => {
   const navigate = useNavigate();
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0 }
-  };
-
   const handleFileClick = (file: FileType) => {
     onFileSelect(file);
     navigate(`/file/${file.id}`);
   };
 
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="space-y-3"
-    >
+    <div className="space-y-3">
       {files.map((file) => (
         <motion.div
           key={file.id}
-          variants={item}
-          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer"
-          whileHover={{ scale: 1.01, x: 4 }}
-          whileTap={{ scale: 0.99 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group cursor-pointer"
           onClick={() => handleFileClick(file)}
         >
           <div className="flex items-center p-4">
@@ -103,7 +82,7 @@ const FileList: React.FC<FileListProps> = ({ files, onFileSelect, onToggleBookma
           </div>
         </motion.div>
       ))}
-    </motion.div>
+    </div>
   );
 };
 

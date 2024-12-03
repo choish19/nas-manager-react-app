@@ -10,32 +10,23 @@ interface FileGridProps {
 }
 
 const FileGrid: React.FC<FileGridProps> = ({ files, onFileSelect, onToggleBookmark }) => {
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
   return (
-    <motion.div
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-    >
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pr-2">
       {files.map((file) => (
-        <FileCard
+        <motion.div
           key={file.id}
-          file={file}
-          onSelect={onFileSelect}
-          onToggleBookmark={onToggleBookmark}
-        />
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <FileCard
+            file={file}
+            onSelect={onFileSelect}
+            onToggleBookmark={onToggleBookmark}
+          />
+        </motion.div>
       ))}
-    </motion.div>
+    </div>
   );
 };
 

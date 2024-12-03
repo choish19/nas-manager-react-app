@@ -49,12 +49,12 @@ export const FileIcon: React.FC<FileIconProps> = ({
   const colorClass = getFileColor(extension);
 
   return (
-    <div className="relative group">
+    <div className="relative inline-flex flex-col items-center group">
       <Icon 
         size={size}
         className={`${className} ${colorClass} transition-all duration-200`}
       />
-      <span className="absolute bottom-0 right-0 text-[10px] font-medium bg-gray-100 px-1 rounded uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <span className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-[10px] font-medium bg-gray-100 px-1.5 py-0.5 rounded uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
         {extension}
       </span>
     </div>
