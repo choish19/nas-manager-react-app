@@ -42,6 +42,11 @@
   .icon-hover {
     @apply transition-transform duration-200 ease-in-out hover:scale-110;
   }
+
+  /* Stable scrollbar styles */
+  .scrollbar-stable {
+    scrollbar-gutter: stable;
+  }
 }
 
 /* Custom Scrollbar */

@@ -3,16 +3,17 @@ import { useStore } from '../store/useStore';
 import { FileType } from '../types';
 import FileGrid from '../components/FileGrid';
 import FileList from '../components/FileList';
-import SearchBar from '../components/SearchBar';
 import ChatBot from '../components/ChatBot';
 import { MessageCircle } from 'lucide-react';
 import { FileTypeFilter } from '../components/FileTypeFilter';
 import { ViewToggle } from '../components/ViewToggle';
 import { motion, AnimatePresence } from 'framer-motion';
+import PageLayout from '../components/PageLayout';
+import { useSearch } from '../hooks/useSearch';
 
 const Home = () => {
   const { files, toggleBookmark, watch, fetchFiles, user } = useStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { searchQuery, setSearchQuery, filteredFiles: searchedFiles } = useSearch(files);
   const [showChat, setShowChat] = useState(false);
   const [selectedType, setSelectedType] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.setting.defaultView ?? 'grid');
@@ -21,71 +22,71 @@ const Home = () => {
     fetchFiles();
   }, [fetchFiles]);
 
-  const filteredFiles = files.filter((file) => {
-    const matchesSearch = file.name.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredFiles = searchedFiles.filter((file) => {
     const matchesType = selectedType === 'all' || file.type === selectedType;
-    return matchesSearch && matchesType;
+    return matchesType;
   });
 
   const handleFileSelect = (file: FileType) => {
     watch(file.id);
   };
 
+  const headerContent = (
+    <div className="flex items-center justify-between">
+      <FileTypeFilter
+        selectedType={selectedType}
+        onTypeSelect={setSelectedType}
+        files={searchedFiles}
+      />
+      <ViewToggle view={viewMode} onViewChange={setViewMode} />
+    </div>
+  );
+
   return (
-    <div className="h-full flex flex-col bg-gray-50">
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="space-y-6">
-            <div className="sticky top-0 z-10 bg-gray-50 py-2 flex items-center justify-between">
-              <FileTypeFilter
-                selectedType={selectedType}
-                onTypeSelect={setSelectedType}
-                files={files}
+    <PageLayout 
+      title="파일" 
+      headerContent={headerContent}
+      searchQuery={searchQuery}
+      onSearch={setSearchQuery}
+    >
+      <div className="mt-6">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={viewMode}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="min-h-[200px]"
+          >
+            {viewMode === 'grid' ? (
+              <FileGrid
+                files={filteredFiles}
+                onFileSelect={handleFileSelect}
+                onToggleBookmark={toggleBookmark}
               />
-              <ViewToggle view={viewMode} onViewChange={setViewMode} />
-            </div>
-
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={viewMode}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="min-h-[200px]"
-              >
-                {viewMode === 'grid' ? (
-                  <FileGrid
-                    files={filteredFiles}
-                    onFileSelect={handleFileSelect}
-                    onToggleBookmark={toggleBookmark}
-                  />
-                ) : (
-                  <FileList
-                    files={filteredFiles}
-                    onFileSelect={handleFileSelect}
-                    onToggleBookmark={toggleBookmark}
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
-
-            {filteredFiles.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-12"
-              >
-                <p className="text-gray-500 text-lg mb-2">검색 결과가 없습니다</p>
-                <p className="text-gray-400 text-sm">
-                  다른 검색어나 필터를 시도해보세요
-                </p>
-              </motion.div>
+            ) : (
+              <FileList
+                files={filteredFiles}
+                onFileSelect={handleFileSelect}
+                onToggleBookmark={toggleBookmark}
+              />
             )}
-          </div>
-        </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {filteredFiles.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-12"
+          >
+            <p className="text-gray-500 text-lg mb-2">검색 결과가 없습니다</p>
+            <p className="text-gray-400 text-sm">
+              다른 검색어나 필터를 시도해보세요
+            </p>
+          </motion.div>
+        )}
       </div>
 
       <motion.button
@@ -110,7 +111,7 @@ const Home = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </PageLayout>
   );
 };
 
