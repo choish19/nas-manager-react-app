@@ -8,7 +8,7 @@ import ChatBot from '../components/ChatBot';
 import { MessageCircle } from 'lucide-react';
 
 const Home = () => {
-  const { files, toggleBookmark, incrementAccessCount, fetchFiles, user } = useStore();
+  const { files, toggleBookmark, watch, fetchFiles, user } = useStore();
   const [searchQuery, setSearchQuery] = React.useState('');
   const [showChat, setShowChat] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.setting.defaultView ?? 'grid');
@@ -22,8 +22,7 @@ const Home = () => {
   );
 
   const handleFileSelect = (file: FileType) => {
-    incrementAccessCount(file.id);
-    useStore.getState().addToHistory(file.id);
+    watch(file.id);
   };
 
   return (

@@ -10,9 +10,8 @@ interface StoreState {
   chatHistory: ChatMessage[];
   setUser: (user: User | null) => void;
   updateUserSettings: (settings: Partial<User['setting']>) => void;
-  addToHistory: (fileId: number) => void;
+  watch: (fileId: number) => void;
   toggleBookmark: (fileId: number) => void;
-  incrementAccessCount: (fileId: number) => void;
   incrementRecommendations: (fileId: number) => void;
   addChatMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
   fetchFiles: () => void;
@@ -49,14 +48,14 @@ export const useStore = create<StoreState>()(
           console.error('Failed to update user settings:', error);
         }
       },
-      addToHistory: async (fileId) => {
+      watch: async (fileId) => {
         try {
-          await apiFiles.addToHistory(fileId);
+          await apiFiles.watch(fileId);
           set((state) => ({
             viewHistory: [fileId, ...state.viewHistory.filter((id) => id !== fileId)].slice(0, 50),
           }));
         } catch (error) {
-          console.error('Failed to add to history:', error);
+          console.error('Failed to watch file:', error);
         }
       },
       toggleBookmark: async (fileId) => {
@@ -75,18 +74,6 @@ export const useStore = create<StoreState>()(
           }));
         } catch (error) {
           console.error('Failed to toggle bookmark:', error);
-        }
-      },
-      incrementAccessCount: async (fileId) => {
-        try {
-          await apiFiles.incrementAccessCount(fileId);
-          set((state) => ({
-            files: state.files.map((file) =>
-              file.id === fileId ? { ...file, accessCount: file.accessCount + 1 } : file
-            ),
-          }));
-        } catch (error) {
-          console.error('Failed to increment access count:', error);
         }
       },
       incrementRecommendations: async (fileId) => {

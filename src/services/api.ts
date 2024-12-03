@@ -27,13 +27,14 @@ export const auth = {
 
 export const files = {
   getAll: () => api.get('/files'),
-  addToHistory: (fileId: number) => api.post(`/files/${fileId}/history`),
+  getHistory: () => api.get(`/files/history`),
+  getBookmarks: () => api.get(`/files/bookmarks`),
   upload: (formData: FormData) => api.post('/files', formData),
   download: (fileId: number) => api.get(`/files/${fileId}`),
   addBookmark: (fileId: number) => api.post(`/files/${fileId}/bookmark`),
   removeBookmark: (fileId: number) => api.delete(`/files/${fileId}/bookmark`),
   incrementRecommendations: (fileId: number) => api.put(`/files/${fileId}/recommend`),
-  incrementAccessCount: (fileId: number) => api.post(`/files/${fileId}/access-count`),
+  watch: (fileId: number) => api.post(`/files/${fileId}/watch`),
   getFileDetail: (fileId: number) => api.get(`/files/${fileId}`),
   getRecommendedFiles: (fileId: number) => api.get(`/files/${fileId}/recommended`),
 };

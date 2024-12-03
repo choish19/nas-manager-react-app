@@ -9,6 +9,7 @@ export interface FileType {
   bookmarkCount: number;
   accessCount: number;
   recommendations: number;
+  watchedAt?: string;
   tags?: string[];
 }
 
