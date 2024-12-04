@@ -2,56 +2,55 @@ import { useEffect, useCallback, useRef } from 'react';
 import { PageRequest } from '../types';
 
 export const useInfiniteScroll = (
-  fetchMore: (pageRequest: PageRequest) => void,
+  fetchMore: () => Promise<void>,
   hasMore: boolean,
   loading: boolean,
   pageRequest: PageRequest
 ) => {
   const loadingRef = useRef(loading);
   const hasMoreRef = useRef(hasMore);
-  const pageRequestRef = useRef(pageRequest);
 
   useEffect(() => {
     loadingRef.current = loading;
     hasMoreRef.current = hasMore;
-    pageRequestRef.current = pageRequest;
-  }, [loading, hasMore, pageRequest]);
+  }, [loading, hasMore]);
 
   const handleScroll = useCallback(() => {
     if (loadingRef.current || !hasMoreRef.current) return;
 
-    const container = document.querySelector('.scrollbar-stable');
-    if (!container) return;
+    const scrollingElement = document.querySelector('.scrollbar-stable');
+    if (!scrollingElement) return;
 
-    const { scrollHeight, scrollTop, clientHeight } = container;
-    const threshold = scrollHeight * 0.8;
+    const { scrollTop, clientHeight, scrollHeight } = scrollingElement;
+    const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
 
-    if (scrollTop + clientHeight >= threshold) {
-      fetchMore({
-        ...pageRequestRef.current,
-        page: pageRequestRef.current.page + 1,
-      });
+    // Trigger fetch when user has scrolled 70% of the content
+    if (scrollPercentage > 0.7) {
+      fetchMore();
     }
   }, [fetchMore]);
 
   useEffect(() => {
-    const container = document.querySelector('.scrollbar-stable');
-    if (!container) return;
+    const scrollingElement = document.querySelector('.scrollbar-stable');
+    if (!scrollingElement) return;
 
     const throttledScroll = throttle(handleScroll, 200);
-    container.addEventListener('scroll', throttledScroll, { passive: true });
-    
+    scrollingElement.addEventListener('scroll', throttledScroll);
+
+    // Initial check in case the content doesn't fill the page
+    handleScroll();
+
     return () => {
-      container.removeEventListener('scroll', throttledScroll);
+      scrollingElement.removeEventListener('scroll', throttledScroll);
     };
   }, [handleScroll]);
 };
 
 function throttle(func: Function, limit: number) {
   let inThrottle: boolean;
-  return (...args: any[]) => {
+  return function(...args: any[]) {
     if (!inThrottle) {
-      func(...args);
+      func.apply(this, args);
       inThrottle = true;
       setTimeout(() => inThrottle = false, limit);
     }

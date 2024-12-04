@@ -14,7 +14,7 @@ interface StoreState {
   toggleBookmark: (fileId: number) => void;
   incrementRecommendations: (fileId: number) => void;
   addChatMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
-  fetchFiles: () => void;
+  fetchFiles: () => Promise<FileType[]>;
   fetchUser: () => void;
   logout: () => void;
 }
@@ -110,10 +110,18 @@ export const useStore = create<StoreState>()(
       },
       fetchFiles: async () => {
         try {
-          const response = await apiFiles.getAll({ page: 0, size: 20 });
-          set({ files: response.data.content });
+          const response = await apiFiles.getAll({ 
+            page: 0, 
+            size: 20,
+            sortBy: 'lastAccessed',
+            direction: 'DESC'
+          });
+          const files = response.data.content;
+          set({ files });
+          return files;
         } catch (error) {
           console.error('Failed to fetch files:', error);
+          return [];
         }
       },
       fetchUser: async () => {

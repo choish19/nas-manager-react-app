@@ -4,23 +4,84 @@ import { FileType } from '../types';
 import FileGrid from '../components/FileGrid';
 import FileList from '../components/FileList';
 import ChatBot from '../components/ChatBot';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Loader } from 'lucide-react';
 import { FileTypeFilter } from '../components/FileTypeFilter';
 import { ViewToggle } from '../components/ViewToggle';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageLayout from '../components/PageLayout';
 import { useSearch } from '../hooks/useSearch';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import { files as apiFiles } from '../services/api';
+
+const ITEMS_PER_PAGE = 20;
 
 const Home = () => {
-  const { files, toggleBookmark, watch, fetchFiles, user } = useStore();
-  const { searchQuery, setSearchQuery, filteredFiles: searchedFiles } = useSearch(files);
+  const { toggleBookmark, watch, user } = useStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const [allFiles, setAllFiles] = useState<FileType[]>([]);
+  const { searchQuery, setSearchQuery, filteredFiles: searchedFiles } = useSearch(allFiles);
   const [showChat, setShowChat] = useState(false);
   const [selectedType, setSelectedType] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.setting.defaultView ?? 'grid');
 
+  const fetchMoreFiles = async () => {
+    if (isLoading || !hasMore) return;
+
+    setIsLoading(true);
+    try {
+      const response = await apiFiles.getAll({ 
+        page, 
+        size: ITEMS_PER_PAGE,
+        sortBy: 'lastAccessed',
+        direction: 'DESC'
+      });
+      
+      const newFiles = response.data.content;
+      setAllFiles(prev => {
+        const existingIds = new Set(prev.map(file => file.id));
+        const uniqueNewFiles = newFiles.filter(file => !existingIds.has(file.id));
+        return [...prev, ...uniqueNewFiles];
+      });
+      setHasMore(!response.data.last);
+      setPage(prev => prev + 1);
+    } catch (error) {
+      console.error('Failed to fetch more files:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useInfiniteScroll(fetchMoreFiles, hasMore, isLoading, {
+    page,
+    size: ITEMS_PER_PAGE,
+    sortBy: 'lastAccessed',
+    direction: 'DESC'
+  });
+
   useEffect(() => {
-    fetchFiles();
-  }, [fetchFiles]);
+    const loadInitialFiles = async () => {
+      try {
+        const response = await apiFiles.getAll({ 
+          page: 0, 
+          size: ITEMS_PER_PAGE,
+          sortBy: 'lastAccessed',
+          direction: 'DESC'
+        });
+        setAllFiles(response.data.content);
+        setHasMore(!response.data.last);
+        setPage(1);
+      } catch (error) {
+        console.error('Failed to load initial files:', error);
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    loadInitialFiles();
+  }, []);
 
   const filteredFiles = searchedFiles.filter((file) => {
     const matchesType = selectedType === 'all' || file.type === selectedType;
@@ -42,6 +103,21 @@ const Home = () => {
     </div>
   );
 
+  const LoadingIndicator = () => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={`flex justify-center items-center py-8 ${
+        user?.setting.darkMode ? 'text-gray-300' : 'text-gray-600'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <Loader className="w-5 h-5 animate-spin" />
+        <span className="text-sm font-medium">파일을 불러오는 중...</span>
+      </div>
+    </motion.div>
+  );
+
   return (
     <PageLayout 
       title="파일" 
@@ -50,42 +126,56 @@ const Home = () => {
       onSearch={setSearchQuery}
     >
       <div className="mt-6">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={viewMode}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="min-h-[200px]"
-          >
-            {viewMode === 'grid' ? (
-              <FileGrid
-                files={filteredFiles}
-                onFileSelect={handleFileSelect}
-                onToggleBookmark={toggleBookmark}
-              />
-            ) : (
-              <FileList
-                files={filteredFiles}
-                onFileSelect={handleFileSelect}
-                onToggleBookmark={toggleBookmark}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+        {initialLoading ? (
+          <LoadingIndicator />
+        ) : (
+          <>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={viewMode}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="min-h-[200px]"
+              >
+                {viewMode === 'grid' ? (
+                  <FileGrid
+                    files={filteredFiles}
+                    onFileSelect={handleFileSelect}
+                    onToggleBookmark={toggleBookmark}
+                  />
+                ) : (
+                  <FileList
+                    files={filteredFiles}
+                    onFileSelect={handleFileSelect}
+                    onToggleBookmark={toggleBookmark}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
 
-        {filteredFiles.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex flex-col items-center justify-center py-12"
-          >
-            <p className="text-gray-500 text-lg mb-2">검색 결과가 없습니다</p>
-            <p className="text-gray-400 text-sm">
-              다른 검색어나 필터를 시도해보세요
-            </p>
-          </motion.div>
+            {isLoading && <LoadingIndicator />}
+
+            {filteredFiles.length === 0 && !isLoading && !initialLoading && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center justify-center py-12"
+              >
+                <p className={`text-lg mb-2 ${
+                  user?.setting.darkMode ? 'text-gray-300' : 'text-gray-500'
+                }`}>
+                  검색 결과가 없습니다
+                </p>
+                <p className={`text-sm ${
+                  user?.setting.darkMode ? 'text-gray-400' : 'text-gray-400'
+                }`}>
+                  다른 검색어나 필터를 시도해보세요
+                </p>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
 
