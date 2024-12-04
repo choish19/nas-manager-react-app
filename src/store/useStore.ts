@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { FileType, ChatMessage, User } from '../types';
 import { persist } from 'zustand/middleware';
-import { files as apiFiles, user as apiUser, chat as apiChat } from '../services/api'; // 필요한 API 가져오기
+import { files as apiFiles, user as apiUser, chat as apiChat } from '../services/api';
 
 interface StoreState {
   user: User | null;
@@ -10,7 +10,7 @@ interface StoreState {
   chatHistory: ChatMessage[];
   setUser: (user: User | null) => void;
   updateUserSettings: (settings: Partial<User['setting']>) => void;
-  watch: (fileId: number) => void;
+  watch: (fileId: number) => Promise<void>;
   toggleBookmark: (fileId: number) => void;
   incrementRecommendations: (fileId: number) => void;
   addChatMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
@@ -53,6 +53,11 @@ export const useStore = create<StoreState>()(
           await apiFiles.watch(fileId);
           set((state) => ({
             viewHistory: [fileId, ...state.viewHistory.filter((id) => id !== fileId)].slice(0, 50),
+            files: state.files.map(file => 
+              file.id === fileId 
+                ? { ...file, watchedAt: new Date().toISOString() }
+                : file
+            ),
           }));
         } catch (error) {
           console.error('Failed to watch file:', error);
@@ -105,8 +110,8 @@ export const useStore = create<StoreState>()(
       },
       fetchFiles: async () => {
         try {
-          const response = await apiFiles.getAll();
-          set({ files: response.data });
+          const response = await apiFiles.getAll({ page: 0, size: 20 });
+          set({ files: response.data.content });
         } catch (error) {
           console.error('Failed to fetch files:', error);
         }

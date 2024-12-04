@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { User, ChatMessage } from '../types';
+import { User, ChatMessage, PageRequest, PageResponse, FileType, RecommendationResponse } from '../types';
 
 const API_URL = 'http://localhost:8080/api';
 
@@ -26,9 +26,12 @@ export const auth = {
 };
 
 export const files = {
-  getAll: () => api.get('/files'),
-  getHistory: () => api.get(`/files/history`),
-  getBookmarks: () => api.get(`/files/bookmarks`),
+  getAll: (pageRequest: PageRequest) => 
+    api.get<PageResponse<FileType>>('/files', { params: pageRequest }),
+  getHistory: () => api.get('/files/history'),
+  getBookmarks: () => api.get('/files/bookmarks'),
+  getRecommendations: () => 
+    api.get<RecommendationResponse[]>('/recommendations'),
   upload: (formData: FormData) => api.post('/files', formData),
   download: (fileId: number) => api.get(`/files/${fileId}`),
   addBookmark: (fileId: number) => api.post(`/files/${fileId}/bookmark`),

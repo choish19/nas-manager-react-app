@@ -26,7 +26,6 @@ export interface ChatMessage {
   timestamp: number;
 }
 
-
 export interface User {
   id: number;
   username: string;
@@ -36,4 +35,25 @@ export interface User {
     autoPlay: boolean;
     defaultView: 'grid' | 'list';
   };
+}
+
+export interface PageRequest {
+  page: number;
+  size: number;
+  sortBy?: string;
+  direction?: 'ASC' | 'DESC';
+}
+
+export interface PageResponse<T> {
+  content: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+}
+
+export interface RecommendationResponse {
+  files: FileType[];
+  reason: string;
 }
