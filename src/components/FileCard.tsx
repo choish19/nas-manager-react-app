@@ -18,19 +18,22 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
 
   return (
     <motion.div
-      className={`rounded-xl overflow-hidden cursor-pointer group ${
+      className={`rounded-xl overflow-hidden cursor-pointer group border shadow-sm ${
         isDarkMode 
-          ? 'bg-gray-800/80 hover:bg-gray-700/60' 
-          : 'bg-white hover:bg-gray-50'
-      } transition-all duration-200`}
+          ? 'bg-gray-800/95 hover:bg-gray-700/90 border-gray-700/50' 
+          : 'bg-white/90 hover:bg-gray-50/95 border-gray-300 hover:border-gray-500'
+      } transition-all duration-150 hover:shadow-lg`}
       whileHover={{ y: -4 }}
       whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.15 }}
       onClick={() => onSelect(file)}
     >
       <div className={`relative aspect-video p-6 flex items-center justify-center ${
-        isDarkMode ? 'bg-gray-900/40' : 'bg-gray-50'
-      }`}>
-        <div className="transform transition-transform duration-300 group-hover:scale-110">
+        isDarkMode 
+          ? 'bg-gray-900/60 border-gray-700/50' 
+          : 'bg-gray-100/80 border-gray-200/70'
+      } border-b`}>
+        <div className="transform transition-transform duration-150 group-hover:scale-110">
           <FileIcon 
             filename={file.name}
             size={48}
