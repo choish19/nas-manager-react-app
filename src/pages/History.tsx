@@ -8,6 +8,7 @@ import HistoryMonth from '../components/HistoryMonth';
 import HistoryStats from '../components/HistoryStats';
 import PageLayout from '../components/PageLayout';
 import { useSearch } from '../hooks/useSearch';
+import { useFileNavigation } from '../hooks/useFileNavigation';
 
 const History = () => {
   const { toggleBookmark } = useStore();
@@ -15,6 +16,7 @@ const History = () => {
   const [isLoading, setIsLoading] = useState(true);
   const allFiles = Object.values(historyFiles).flat();
   const { searchQuery, setSearchQuery, filteredFiles } = useSearch(allFiles);
+  const { handleFileSelect } = useFileNavigation();
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -85,7 +87,7 @@ const History = () => {
               key={month}
               month={month}
               files={files}
-              onFileSelect={(file) => useStore.getState().watch(file.id)}
+              onFileSelect={handleFileSelect}
               onToggleBookmark={handleToggleBookmark}
             />
           ))}

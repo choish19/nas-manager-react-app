@@ -11,12 +11,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import PageLayout from '../components/PageLayout';
 import { useSearch } from '../hooks/useSearch';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import { useFileNavigation } from '../hooks/useFileNavigation';
 import { files as apiFiles } from '../services/api';
 
 const ITEMS_PER_PAGE = 20;
 
 const Home = () => {
-  const { toggleBookmark, watch, user } = useStore();
+  const { toggleBookmark, user } = useStore();
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
@@ -26,6 +27,7 @@ const Home = () => {
   const [showChat, setShowChat] = useState(false);
   const [selectedType, setSelectedType] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.setting.defaultView ?? 'grid');
+  const { handleFileSelect } = useFileNavigation();
 
   const fetchMoreFiles = async () => {
     if (isLoading || !hasMore) return;
@@ -87,10 +89,6 @@ const Home = () => {
     const matchesType = selectedType === 'all' || file.type === selectedType;
     return matchesType;
   });
-
-  const handleFileSelect = (file: FileType) => {
-    watch(file.id);
-  };
 
   const headerContent = (
     <div className="flex items-center justify-between">

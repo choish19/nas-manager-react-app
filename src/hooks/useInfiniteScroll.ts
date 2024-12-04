@@ -48,9 +48,9 @@ export const useInfiniteScroll = (
 
 function throttle(func: Function, limit: number) {
   let inThrottle: boolean;
-  return function(...args: any[]) {
+  return (...args: any[]) => {
     if (!inThrottle) {
-      func.apply(this, args);
+      func.bind(null)(...args);
       inThrottle = true;
       setTimeout(() => inThrottle = false, limit);
     }

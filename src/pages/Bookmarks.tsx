@@ -8,6 +8,7 @@ import FileGrid from '../components/FileGrid';
 import { groupBy } from 'lodash';
 import PageLayout from '../components/PageLayout';
 import { useSearch } from '../hooks/useSearch';
+import { useFileNavigation } from '../hooks/useFileNavigation';
 import { motion } from 'framer-motion';
 
 const Bookmarks = () => {
@@ -16,6 +17,7 @@ const Bookmarks = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const { searchQuery, setSearchQuery, filteredFiles: searchedFiles } = useSearch(bookmarkedFiles);
+  const { handleFileSelect } = useFileNavigation();
   const isDarkMode = user?.setting.darkMode;
 
   useEffect(() => {
@@ -102,7 +104,7 @@ const Bookmarks = () => {
           <div className="p-6">
             <FileGrid
               files={filteredFiles}
-              onFileSelect={(file) => useStore.getState().watch(file.id)}
+              onFileSelect={handleFileSelect}
               onToggleBookmark={handleToggleBookmark}
             />
           </div>
