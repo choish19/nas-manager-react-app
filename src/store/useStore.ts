@@ -6,9 +6,11 @@ import { files as apiFiles, user as apiUser, chat as apiChat } from '../services
 interface StoreState {
   user: User | null;
   files: FileType[];
+  selectedFile: FileType | null;
   viewHistory: number[];
   chatHistory: ChatMessage[];
   setUser: (user: User | null) => void;
+  setSelectedFile: (file: FileType | null) => void;
   updateUserSettings: (settings: Partial<User['setting']>) => void;
   watch: (fileId: number) => Promise<void>;
   toggleBookmark: (fileId: number) => void;
@@ -24,6 +26,7 @@ export const useStore = create<StoreState>()(
     (set, get) => ({
       user: null,
       files: [],
+      selectedFile: null,
       viewHistory: [],
       chatHistory: [],
       setUser: async (user) => {
@@ -35,6 +38,9 @@ export const useStore = create<StoreState>()(
         } catch (error) {
           console.error('Failed to update user:', error);
         }
+      },
+      setSelectedFile: (file) => {
+        set({ selectedFile: file });
       },
       updateUserSettings: async (newSettings) => {
         try {
@@ -76,6 +82,9 @@ export const useStore = create<StoreState>()(
             files: state.files.map((file) =>
               file.id === fileId ? { ...file, bookmarked: !file.bookmarked } : file
             ),
+            selectedFile: state.selectedFile?.id === fileId 
+              ? { ...state.selectedFile, bookmarked: !state.selectedFile.bookmarked }
+              : state.selectedFile
           }));
         } catch (error) {
           console.error('Failed to toggle bookmark:', error);
@@ -135,6 +144,7 @@ export const useStore = create<StoreState>()(
       logout: () => {
         set({
           user: null,
+          selectedFile: null,
           viewHistory: [],
           chatHistory: [],
         });

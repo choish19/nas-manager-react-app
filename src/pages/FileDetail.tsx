@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, FileText, Bookmark, BookmarkCheck, Clock, Tag, Eye } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { FileType } from '../types';
@@ -12,17 +12,52 @@ import { FileIcon } from '../components/FileIcon';
 export function FileDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { files, toggleBookmark, user } = useStore();
+  const location = useLocation();
+  const { files, toggleBookmark, user, selectedFile } = useStore();
   const [recommendedFiles, setRecommendedFiles] = useState<FileType[]>([]);
-  const file = files.find((f: FileType) => f.id === Number(id));
+  const [isLoading, setIsLoading] = useState(false);
+  const file = selectedFile || files.find((f: FileType) => f.id === Number(id));
   const isDarkMode = user?.setting.darkMode;
   
+  useEffect(() => {
+    const fetchFileDetails = async () => {
+      if (!selectedFile && id) {
+        setIsLoading(true);
+        try {
+          const response = await apiFiles.getFileDetail(Number(id));
+          useStore.setState({ selectedFile: response.data });
+        } catch (error) {
+          console.error('Failed to fetch file details:', error);
+          navigate('/');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchFileDetails();
+  }, [id, selectedFile, navigate]);
+
   useEffect(() => {
     if (file) {
       apiFiles.getRecommendedFiles(file.id)
         .then(response => setRecommendedFiles(response.data));
     }
   }, [file]);
+
+  if (isLoading) {
+    return (
+      <PageLayout
+        title="파일 상세"
+        searchQuery=""
+        onSearch={() => {}}
+      >
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        </div>
+      </PageLayout>
+    );
+  }
 
   if (!file) {
     return (
@@ -39,7 +74,10 @@ export function FileDetail() {
   }
 
   const handleBack = () => {
-    navigate(-1);
+    useStore.setState({ selectedFile: null });
+    // Navigate to the stored 'from' path, or fall back to home if not available
+    const fromPath = location.state?.from || '/';
+    navigate(fromPath);
   };
 
   const FileDetailCard = () => (
@@ -184,7 +222,12 @@ export function FileDetail() {
                     key={recommendedFile.id}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => navigate(`/file/${recommendedFile.id}`)}
+                    onClick={() => {
+                      useStore.setState({ selectedFile: recommendedFile });
+                      navigate(`/file/${recommendedFile.id}`, {
+                        state: { from: location.state?.from }
+                      });
+                    }}
                     className={`w-full p-3 rounded-lg transition-colors ${
                       isDarkMode 
                         ? 'hover:bg-gray-800 bg-gray-800/50' 
