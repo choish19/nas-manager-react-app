@@ -4,14 +4,15 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { FileType } from '../types';
-import FileGrid from './FileGrid';
 import { useStore } from '../store/useStore';
+import HistoryFileCard from './HistoryFileCard';
 
 interface HistoryMonthProps {
   month: string;
   files: FileType[];
   onFileSelect: (file: FileType) => void;
   onToggleBookmark: (fileId: number) => void;
+  onDeleteHistory: (fileId: number) => void;
 }
 
 const HistoryMonth: React.FC<HistoryMonthProps> = ({
@@ -19,6 +20,7 @@ const HistoryMonth: React.FC<HistoryMonthProps> = ({
   files,
   onFileSelect,
   onToggleBookmark,
+  onDeleteHistory,
 }) => {
   const { user } = useStore();
   const isDarkMode = user?.setting.darkMode;
@@ -54,11 +56,17 @@ const HistoryMonth: React.FC<HistoryMonthProps> = ({
         </div>
       </div>
       <div className="p-6">
-        <FileGrid
-          files={files}
-          onFileSelect={onFileSelect}
-          onToggleBookmark={onToggleBookmark}
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {files.map((file) => (
+            <HistoryFileCard
+              key={file.id}
+              file={file}
+              onSelect={onFileSelect}
+              onToggleBookmark={onToggleBookmark}
+              onDeleteHistory={onDeleteHistory}
+            />
+          ))}
+        </div>
       </div>
     </motion.div>
   );
