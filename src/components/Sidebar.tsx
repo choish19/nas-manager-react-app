@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, History, Settings, Bookmark } from 'lucide-react';
+import { Home, History, Settings, Bookmark, FolderTree } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { motion } from 'framer-motion';
@@ -39,6 +39,12 @@ const Sidebar = () => {
           icon={<Home size={20} />} 
           text="홈" 
           active={location.pathname === '/'} 
+        />
+        <SidebarItem 
+          to="/filesystem" 
+          icon={<FolderTree size={20} />} 
+          text="파일 시스템" 
+          active={location.pathname === '/filesystem'} 
         />
         <SidebarItem 
           to="/bookmarks" 

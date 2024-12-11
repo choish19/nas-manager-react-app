@@ -8,6 +8,7 @@ import Settings from './pages/Setting';
 import Login from './pages/Login';
 import { useStore } from './store/useStore';
 import { FileDetail } from './pages/FileDetail';
+import FileSystem from './pages/FileSystem';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useStore();
@@ -34,6 +35,7 @@ function App() {
             <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
             <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
             <Route path="/file/:id" element={<PrivateRoute><FileDetail /></PrivateRoute>} />
+            <Route path="/filesystem" element={<PrivateRoute><FileSystem /></PrivateRoute>} />
             {!user && <Route path="/login" element={<Login />} />}
             <Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
           </Routes>
