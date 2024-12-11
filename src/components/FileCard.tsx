@@ -5,7 +5,7 @@ import { BookmarkButton } from './BookmarkButton';
 import { formatDate } from '../utils/dateUtils';
 import { FileType } from '../types';
 import { useStore } from '../store/useStore';
-import { Eye, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { formatViewCount, getParentFolder } from '../utils/fileUtils';
 
 interface FileCardProps {
@@ -57,9 +57,9 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
       
       <div className="p-3">
         <div>
-          <h3 className={`font-medium line-clamp-2 text-sm mb-1.5 ${
+          <h3 className={`font-medium truncate text-sm mb-1.5 ${
             isDarkMode ? 'text-gray-200' : 'text-gray-900'
-          }`}>
+          }`} title={file.name}>
             {file.name}
           </h3>
           
@@ -74,7 +74,7 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`}>
               <div className="flex items-center gap-1">
-                <Eye className="w-3.5 h-3.5" />
+                <span className="font-medium">조회수</span>
                 <span>{formatViewCount(file.accessCount)}회</span>
               </div>
               <div className="flex items-center gap-1">
