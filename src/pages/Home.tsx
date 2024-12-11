@@ -12,18 +12,16 @@ import PageLayout from '../components/PageLayout';
 import { useSearch } from '../hooks/useSearch';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { useFileNavigation } from '../hooks/useFileNavigation';
-import { files as apiFiles } from '../services/api';
 
 const ITEMS_PER_PAGE = 20;
 
 const Home = () => {
-  const { toggleBookmark, user } = useStore();
+  const { files, toggleBookmark, user, fetchFiles, setFiles } = useStore();
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
-  const [allFiles, setAllFiles] = useState<FileType[]>([]);
-  const { searchQuery, setSearchQuery, filteredFiles: searchedFiles } = useSearch(allFiles);
+  const { searchQuery, setSearchQuery, filteredFiles: searchedFiles } = useSearch(files);
   const [showChat, setShowChat] = useState(false);
   const [selectedType, setSelectedType] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(user?.setting.defaultView ?? 'grid');
@@ -34,20 +32,8 @@ const Home = () => {
 
     setIsLoading(true);
     try {
-      const response = await apiFiles.getAll({ 
-        page, 
-        size: ITEMS_PER_PAGE,
-        sortBy: 'lastAccessed',
-        direction: 'DESC'
-      });
-      
-      const newFiles = response.data.content;
-      setAllFiles(prev => {
-        const existingIds = new Set(prev.map(file => file.id));
-        const uniqueNewFiles = newFiles.filter(file => !existingIds.has(file.id));
-        return [...prev, ...uniqueNewFiles];
-      });
-      setHasMore(!response.data.last);
+      const newFiles = await fetchFiles(page);
+      setHasMore(newFiles.length > 0);
       setPage(prev => prev + 1);
     } catch (error) {
       console.error('Failed to fetch more files:', error);
@@ -64,16 +50,18 @@ const Home = () => {
   });
 
   useEffect(() => {
+    const initializeFiles = () => {
+      setFiles([]);
+    };
+
+    initializeFiles();
+  }, []);
+
+  useEffect(() => {
     const loadInitialFiles = async () => {
       try {
-        const response = await apiFiles.getAll({ 
-          page: 0, 
-          size: ITEMS_PER_PAGE,
-          sortBy: 'lastAccessed',
-          direction: 'DESC'
-        });
-        setAllFiles(response.data.content);
-        setHasMore(!response.data.last);
+        const initialFiles = await fetchFiles(0);
+        setHasMore(initialFiles.length > 0);
         setPage(1);
       } catch (error) {
         console.error('Failed to load initial files:', error);

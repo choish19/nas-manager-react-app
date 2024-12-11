@@ -16,9 +16,13 @@ interface StoreState {
   toggleBookmark: (fileId: number) => void;
   incrementRecommendations: (fileId: number) => void;
   addChatMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
-  fetchFiles: () => Promise<FileType[]>;
+  fetchFiles: (page: number) => Promise<FileType[]>;
   fetchUser: () => void;
   logout: () => void;
+  // Add new tag-related actions
+  addTag: (fileId: number, tag: string) => Promise<void>;
+  removeTag: (fileId: number, tag: string) => Promise<void>;
+  setFiles: (files: FileType[]) => void;
 }
 
 export const useStore = create<StoreState>()(
@@ -117,17 +121,19 @@ export const useStore = create<StoreState>()(
           console.error('Failed to add chat message:', error);
         }
       },
-      fetchFiles: async () => {
+      fetchFiles: async (page: number) => {
         try {
           const response = await apiFiles.getAll({ 
-            page: 0, 
+            page: page, 
             size: 20,
             sortBy: 'lastAccessed',
             direction: 'DESC'
           });
-          const files = response.data.content;
-          set({ files });
-          return files;
+          const newFiles = response.data.content;
+          const existingIds = new Set(get().files.map(file => file.id));
+          const uniqueNewFiles = newFiles.filter(file => !existingIds.has(file.id));
+          set({ files: [...get().files, ...uniqueNewFiles] });
+          return newFiles;
         } catch (error) {
           console.error('Failed to fetch files:', error);
           return [];
@@ -149,6 +155,45 @@ export const useStore = create<StoreState>()(
           chatHistory: [],
         });
         localStorage.removeItem('token');
+        localStorage.removeItem('nas-storage');
+      },
+      // Add new tag-related actions
+      addTag: async (fileId: number, tag: string) => {
+        try {
+          await apiFiles.addTag(fileId, tag);
+          set((state) => ({
+            files: state.files.map((file) =>
+              file.id === fileId
+                ? { ...file, tags: [...(file.tags || []), tag] }
+                : file
+            ),
+            selectedFile: state.selectedFile?.id === fileId
+              ? { ...state.selectedFile, tags: [...(state.selectedFile.tags || []), tag] }
+              : state.selectedFile
+          }));
+        } catch (error) {
+          console.error('Failed to add tag:', error);
+        }
+      },
+      removeTag: async (fileId: number, tag: string) => {
+        try {
+          await apiFiles.removeTag(fileId, tag);
+          set((state) => ({
+            files: state.files.map((file) =>
+              file.id === fileId
+                ? { ...file, tags: file.tags?.filter((t) => t !== tag) }
+                : file
+            ),
+            selectedFile: state.selectedFile?.id === fileId
+              ? { ...state.selectedFile, tags: state.selectedFile.tags?.filter((t) => t !== tag) }
+              : state.selectedFile
+          }));
+        } catch (error) {
+          console.error('Failed to remove tag:', error);
+        }
+      },
+      setFiles: (files) => {
+        set({ files });
       },
     }),
     {
