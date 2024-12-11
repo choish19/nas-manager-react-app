@@ -21,25 +21,6 @@ export function FileDetail() {
   const isDarkMode = user?.setting.darkMode;
   
   useEffect(() => {
-    const fetchFileDetails = async () => {
-      if (!selectedFile && id) {
-        setIsLoading(true);
-        try {
-          const response = await apiFiles.getFileDetail(Number(id));
-          useStore.setState({ selectedFile: response.data });
-        } catch (error) {
-          console.error('Failed to fetch file details:', error);
-          navigate('/');
-        } finally {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    fetchFileDetails();
-  }, [id, selectedFile, navigate]);
-
-  useEffect(() => {
     if (file) {
       apiFiles.getRecommendedFiles(file.id)
         .then(response => setRecommendedFiles(response.data));

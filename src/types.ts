@@ -4,7 +4,7 @@ export interface FileType {
   type: string;
   thumbnail?: string;
   lastAccessed: string;
-  url?: string;
+  path: string;
   bookmarked: boolean;
   bookmarkCount: number;
   accessCount: number;

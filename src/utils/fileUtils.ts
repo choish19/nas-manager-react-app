@@ -54,3 +54,20 @@ export const getFileColor = (extension: FileExtension): string => {
       return 'text-gray-400';
   }
 };
+
+export const formatViewCount = (count: number): string => {
+  if (count >= 1000000) {
+    return `${(count / 1000000).toFixed(1)}M`;
+  }
+  if (count >= 1000) {
+    return `${(count / 1000).toFixed(1)}K`;
+  }
+  return count.toString();
+};
+
+export const getParentFolder = (filePath: string): string => {
+  const parts = filePath.split('/');
+  console.log(parts);
+  if (parts.length <= 1) return '루트 폴더';
+  return parts[parts.length - 2];
+};

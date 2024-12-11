@@ -5,6 +5,8 @@ import { BookmarkButton } from './BookmarkButton';
 import { formatDate } from '../utils/dateUtils';
 import { FileType } from '../types';
 import { useStore } from '../store/useStore';
+import { Eye, Clock } from 'lucide-react';
+import { formatViewCount, getParentFolder } from '../utils/fileUtils';
 
 interface FileCardProps {
   file: FileType;
@@ -15,6 +17,7 @@ interface FileCardProps {
 export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBookmark }) => {
   const { user } = useStore();
   const isDarkMode = user?.setting.darkMode;
+  const parentFolder = getParentFolder(file.path);
 
   return (
     <motion.div
@@ -39,7 +42,7 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
             size={48}
           />
         </div>
-        <div className="absolute top-2 left-2 z-10">
+        <div className="absolute top-2 right-2 z-10">
           <BookmarkButton
             isBookmarked={file.bookmarked}
             onClick={(e) => {
@@ -51,36 +54,33 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
       </div>
       
       <div className="p-4">
-        <h3 className={`font-medium truncate mb-1 ${
-          isDarkMode ? 'text-gray-200' : 'text-gray-900'
-        }`}>
-          {file.name}
-        </h3>
-        <div className="space-y-1">
-          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-            최근 접근: {formatDate(file.lastAccessed)}
-          </p>
-          {file.watchedAt && (
-            <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-              시청 일시: {formatDate(file.watchedAt)}
-            </p>
-          )}
-          {file.tags && file.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {file.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className={`inline-block px-2 py-0.5 text-xs font-medium rounded-full ${
-                    isDarkMode 
-                      ? 'bg-indigo-900/30 text-indigo-300' 
-                      : 'bg-indigo-50 text-indigo-600'
-                  }`}
-                >
-                  {tag}
-                </span>
-              ))}
+        <div className="space-y-2">
+          <h3 className={`font-medium line-clamp-2 ${
+            isDarkMode ? 'text-gray-200' : 'text-gray-900'
+          }`}>
+            {file.name}
+          </h3>
+          
+          <div className="flex flex-col gap-1">
+            <div className={`text-sm font-medium ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-700'
+            }`}>
+              {parentFolder}
             </div>
-          )}
+            
+            <div className={`flex items-center gap-4 text-sm ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-500'
+            }`}>
+              <div className="flex items-center gap-1">
+                <Eye className="w-4 h-4" />
+                <span>{formatViewCount(file.accessCount)}회</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                <span>{formatDate(file.lastAccessed, 'relative')}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>
