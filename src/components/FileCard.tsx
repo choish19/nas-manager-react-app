@@ -42,7 +42,7 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
             size={48}
           />
         </div>
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-2 left-2 z-10">
           <BookmarkButton
             isBookmarked={file.bookmarked}
             onClick={(e) => {
