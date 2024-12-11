@@ -46,6 +46,10 @@ export const files = {
     api.get<string[]>('/files/tags'),
   getFilesByTag: (tag: string) => 
     api.get<FileType[]>(`/files/tags/${tag}`),
+  deleteWatchHistory: (fileId: number) => 
+    api.delete(`/watch-history/${fileId}`),
+  clearWatchHistory: () => 
+    api.delete('/watch-history'),
 };
 
 export const user = {

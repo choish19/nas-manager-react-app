@@ -19,10 +19,11 @@ interface StoreState {
   fetchFiles: (page: number) => Promise<FileType[]>;
   fetchUser: () => void;
   logout: () => void;
-  // Add new tag-related actions
   addTag: (fileId: number, tag: string) => Promise<void>;
   removeTag: (fileId: number, tag: string) => Promise<void>;
   setFiles: (files: FileType[]) => void;
+  deleteWatchHistory: (fileId: number) => Promise<void>;
+  clearWatchHistory: () => Promise<void>;
 }
 
 export const useStore = create<StoreState>()(
@@ -157,7 +158,6 @@ export const useStore = create<StoreState>()(
         localStorage.removeItem('token');
         localStorage.removeItem('nas-storage');
       },
-      // Add new tag-related actions
       addTag: async (fileId: number, tag: string) => {
         try {
           await apiFiles.addTag(fileId, tag);
@@ -194,6 +194,28 @@ export const useStore = create<StoreState>()(
       },
       setFiles: (files) => {
         set({ files });
+      },
+      deleteWatchHistory: async (fileId: number) => {
+        try {
+          await apiFiles.deleteWatchHistory(fileId);
+          set((state) => ({
+            files: state.files.map((file) =>
+              file.id === fileId ? { ...file, watchedAt: undefined } : file
+            ),
+          }));
+        } catch (error) {
+          console.error('Failed to delete watch history:', error);
+        }
+      },
+      clearWatchHistory: async () => {
+        try {
+          await apiFiles.clearWatchHistory();
+          set((state) => ({
+            files: state.files.map((file) => ({ ...file, watchedAt: undefined })),
+          }));
+        } catch (error) {
+          console.error('Failed to clear watch history:', error);
+        }
       },
     }),
     {
