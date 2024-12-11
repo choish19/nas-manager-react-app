@@ -8,12 +8,13 @@ import { motion } from 'framer-motion';
 import PageLayout from '../components/PageLayout';
 import { formatDate } from '../utils/dateUtils';
 import { FileIcon } from '../components/FileIcon';
+import TagInput from '../components/TagInput';
 
 export function FileDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { files, toggleBookmark, user, selectedFile } = useStore();
+  const { files, toggleBookmark, user, selectedFile, addTag, removeTag } = useStore();
   const [recommendedFiles, setRecommendedFiles] = useState<FileType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const file = selectedFile || files.find((f: FileType) => f.id === Number(id));
@@ -45,6 +46,18 @@ export function FileDetail() {
     }
   }, [file]);
 
+  const handleAddTag = async (tag: string) => {
+    if (file) {
+      await addTag(file.id, tag);
+    }
+  };
+
+  const handleRemoveTag = async (tag: string) => {
+    if (file) {
+      await removeTag(file.id, tag);
+    }
+  };
+
   if (isLoading) {
     return (
       <PageLayout
@@ -75,7 +88,6 @@ export function FileDetail() {
 
   const handleBack = () => {
     useStore.setState({ selectedFile: null });
-    // Navigate to the stored 'from' path, or fall back to home if not available
     const fromPath = location.state?.from || '/';
     navigate(fromPath);
   };
@@ -177,34 +189,24 @@ export function FileDetail() {
               )}
             </div>
 
-            {file.tags && file.tags.length > 0 && (
-              <div className={`p-4 rounded-lg ${
-                isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
-              }`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Tag size={16} className="text-indigo-500" />
-                  <span className={`text-sm font-medium ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    태그
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {file.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className={`px-3 py-1 text-sm rounded-full ${
-                        isDarkMode 
-                          ? 'bg-indigo-900/30 text-indigo-300' 
-                          : 'bg-indigo-50 text-indigo-600'
-                      }`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+            <div className={`p-4 rounded-lg ${
+              isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
+            }`}>
+              <div className="flex items-center gap-2 mb-3">
+                <Tag size={16} className="text-indigo-500" />
+                <span className={`text-sm font-medium ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  태그
+                </span>
               </div>
-            )}
+              <TagInput
+                fileId={file.id}
+                currentTags={file.tags || []}
+                onAddTag={handleAddTag}
+                onRemoveTag={handleRemoveTag}
+              />
+            </div>
           </div>
 
           <div className="lg:col-span-1">
@@ -271,5 +273,3 @@ export function FileDetail() {
     </PageLayout>
   );
 }
-
-export default FileDetail;

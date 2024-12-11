@@ -33,13 +33,19 @@ export const files = {
   getRecommendations: () => 
     api.get<RecommendationResponse[]>('/recommendations'),
   upload: (formData: FormData) => api.post('/files', formData),
-  download: (fileId: number) => api.get(`/files/${fileId}`),
   addBookmark: (fileId: number) => api.post(`/files/${fileId}/bookmark`),
   removeBookmark: (fileId: number) => api.delete(`/files/${fileId}/bookmark`),
   incrementRecommendations: (fileId: number) => api.put(`/files/${fileId}/recommend`),
   watch: (fileId: number) => api.post(`/files/${fileId}/watch`),
-  getFileDetail: (fileId: number) => api.get(`/files/${fileId}`),
   getRecommendedFiles: (fileId: number) => api.get(`/files/${fileId}/recommended`),
+  addTag: (fileId: number, tag: string) => 
+    api.post(`/files/${fileId}/tags`, { tag }),
+  removeTag: (fileId: number, tag: string) => 
+    api.delete(`/files/${fileId}/tags/${tag}`),
+  getAllTags: () => 
+    api.get<string[]>('/files/tags'),
+  getFilesByTag: (tag: string) => 
+    api.get<FileType[]>(`/files/tags/${tag}`),
 };
 
 export const user = {
