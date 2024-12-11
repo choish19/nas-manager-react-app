@@ -26,7 +26,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       <div className={`flex-none border-b shadow-sm ${
         isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-[1920px] mx-auto px-6 py-4">
           <div className="max-w-4xl ml-0">
             <SearchBar searchQuery={searchQuery} setSearchQuery={onSearch} />
           </div>
@@ -34,7 +34,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto scrollbar-stable">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="max-w-[1920px] mx-auto px-6 py-6">
           {headerContent && (
             <div className={`sticky top-0 z-10 pt-2 pb-4 ${
               isDarkMode ? 'bg-gray-900' : 'bg-gray-50'
