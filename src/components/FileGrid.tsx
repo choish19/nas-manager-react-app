@@ -11,7 +11,7 @@ interface FileGridProps {
 
 const FileGrid: React.FC<FileGridProps> = ({ files, onFileSelect, onToggleBookmark }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pr-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 pr-2">
       {files.map((file) => (
         <motion.div
           key={file.id}
