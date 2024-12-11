@@ -50,6 +50,8 @@ export const files = {
     api.delete(`/watch-history/${fileId}`),
   clearWatchHistory: () => 
     api.delete('/watch-history'),
+  getAllWithoutPagination: () => 
+    api.get<FileType[]>('/files/all'),
 };
 
 export const user = {

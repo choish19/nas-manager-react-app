@@ -67,7 +67,6 @@ export const formatViewCount = (count: number): string => {
 
 export const getParentFolder = (filePath: string): string => {
   const parts = filePath.split('/');
-  console.log(parts);
   if (parts.length <= 1) return '루트 폴더';
   return parts[parts.length - 2];
 };

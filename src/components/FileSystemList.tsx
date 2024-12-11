@@ -10,12 +10,14 @@ import { formatViewCount } from '../utils/fileUtils';
 
 interface FileSystemListProps {
   files: FileType[];
+  depth: number;
   onFileSelect: (file: FileType) => void;
   onToggleBookmark: (fileId: number) => void;
 }
 
 const FileSystemList: React.FC<FileSystemListProps> = ({
   files,
+  depth,
   onFileSelect,
   onToggleBookmark,
 }) => {
@@ -23,21 +25,23 @@ const FileSystemList: React.FC<FileSystemListProps> = ({
   const isDarkMode = user?.setting.darkMode;
 
   return (
-    <div className="space-y-1 pl-12">
+    <div className="space-y-0.5">
       {files.map((file) => (
         <motion.div
           key={file.id}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className={`group flex items-center gap-3 p-2 rounded-lg cursor-pointer ${
+          className={`group flex items-center gap-2 py-1.5 px-2 rounded-lg cursor-pointer ${
             isDarkMode
               ? 'hover:bg-gray-700/50'
               : 'hover:bg-gray-100'
           }`}
+          style={{ paddingLeft: `${(depth * 20) + 8}px` }}
           onClick={() => onFileSelect(file)}
         >
+          <div className="w-4" /> {/* Spacing for alignment with folders */}
           <div className="flex-shrink-0">
-            <FileIcon filename={file.name} size={20} />
+            <FileIcon filename={file.name} size={18} />
           </div>
           
           <div className="flex-1 min-w-0">

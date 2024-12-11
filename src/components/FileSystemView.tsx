@@ -12,12 +12,12 @@ interface FileSystemNode {
   type: 'file' | 'folder';
   children: { [key: string]: FileSystemNode };
   files: FileType[];
+  depth: number;
 }
 
 interface FolderNodeProps {
   node: FileSystemNode;
   path: string;
-  level: number;
   expanded: Set<string>;
   onToggle: (path: string) => void;
   onFileSelect: (file: FileType) => void;
@@ -27,7 +27,6 @@ interface FolderNodeProps {
 const FolderNode: React.FC<FolderNodeProps> = ({
   node,
   path,
-  level,
   expanded,
   onToggle,
   onFileSelect,
@@ -42,41 +41,52 @@ const FolderNode: React.FC<FolderNodeProps> = ({
     onToggle(path);
   };
 
+  const hasChildren = Object.keys(node.children).length > 0 || node.files.length > 0;
+
   return (
     <div>
       <motion.div
         onClick={handleToggle}
-        className={`flex items-center gap-2 py-2 px-4 cursor-pointer rounded-lg ${
+        className={`flex items-center gap-1.5 py-1.5 px-2 cursor-pointer rounded-lg ${
           isDarkMode
             ? 'hover:bg-gray-700/50'
             : 'hover:bg-gray-100'
         }`}
-        style={{ paddingLeft: `${level * 16 + 16}px` }}
+        style={{ 
+          paddingLeft: `${(node.depth * 20) + 8}px`,
+          marginLeft: node.depth > 0 ? '0' : '0',
+        }}
       >
-        <motion.button
-          initial={false}
-          animate={{ rotate: isExpanded ? 90 : 0 }}
-          className={`w-4 h-4 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-600'
-          }`}
-        >
-          <ChevronRight size={16} />
-        </motion.button>
-        {isExpanded ? (
-          <FolderOpen size={20} className="text-yellow-500" />
+        {hasChildren ? (
+          <motion.button
+            initial={false}
+            animate={{ rotate: isExpanded ? 90 : 0 }}
+            className={`w-4 h-4 flex-shrink-0 ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}
+          >
+            <ChevronRight size={16} />
+          </motion.button>
         ) : (
-          <Folder size={20} className="text-yellow-500" />
+          <div className="w-4" />
         )}
-        <span className={`text-sm ${
+        {isExpanded ? (
+          <FolderOpen size={18} className="text-yellow-500 flex-shrink-0" />
+        ) : (
+          <Folder size={18} className="text-yellow-500 flex-shrink-0" />
+        )}
+        <span className={`text-sm truncate flex-1 ${
           isDarkMode ? 'text-gray-200' : 'text-gray-700'
         }`}>
           {node.name}
         </span>
-        <span className={`text-xs ${
-          isDarkMode ? 'text-gray-400' : 'text-gray-500'
-        }`}>
-          ({node.files.length})
-        </span>
+        {(node.files.length > 0 || Object.keys(node.children).length > 0) && (
+          <span className={`text-xs px-1.5 rounded-full ${
+            isDarkMode ? 'text-gray-400 bg-gray-700/50' : 'text-gray-500 bg-gray-100'
+          }`}>
+            {node.files.length}
+          </span>
+        )}
       </motion.div>
 
       <AnimatePresence>
@@ -92,7 +102,6 @@ const FolderNode: React.FC<FolderNodeProps> = ({
                 key={childNode.path}
                 node={childNode}
                 path={childNode.path}
-                level={level + 1}
                 expanded={expanded}
                 onToggle={onToggle}
                 onFileSelect={onFileSelect}
@@ -100,13 +109,12 @@ const FolderNode: React.FC<FolderNodeProps> = ({
               />
             ))}
             {node.files.length > 0 && (
-              <div className="py-1">
-                <FileSystemList
-                  files={node.files}
-                  onFileSelect={onFileSelect}
-                  onToggleBookmark={onToggleBookmark}
-                />
-              </div>
+              <FileSystemList
+                files={node.files}
+                depth={node.depth + 1}
+                onFileSelect={onFileSelect}
+                onToggleBookmark={onToggleBookmark}
+              />
             )}
           </motion.div>
         )}
@@ -131,6 +139,7 @@ const FileSystemView: React.FC<FileSystemViewProps> = ({ files }) => {
       type: 'folder',
       children: {},
       files: [],
+      depth: 0,
     };
 
     files.forEach(file => {
@@ -138,7 +147,7 @@ const FileSystemView: React.FC<FileSystemViewProps> = ({ files }) => {
       let currentNode = root;
       let currentPath = '';
 
-      parts.slice(0, -1).forEach(part => {
+      parts.slice(0, -1).forEach((part, index) => {
         currentPath += '/' + part;
         if (!currentNode.children[part]) {
           currentNode.children[part] = {
@@ -147,6 +156,7 @@ const FileSystemView: React.FC<FileSystemViewProps> = ({ files }) => {
             type: 'folder',
             children: {},
             files: [],
+            depth: index + 1,
           };
         }
         currentNode = currentNode.children[part];
@@ -175,7 +185,6 @@ const FileSystemView: React.FC<FileSystemViewProps> = ({ files }) => {
       <FolderNode
         node={fileSystem}
         path="/"
-        level={0}
         expanded={expanded}
         onToggle={handleToggle}
         onFileSelect={handleFileSelect}
