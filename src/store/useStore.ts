@@ -127,7 +127,7 @@ export const useStore = create<StoreState>()(
           const response = await apiFiles.getAll({ 
             page: page, 
             size: 20,
-            sortBy: 'lastAccessed',
+            sortBy: 'lastWriteTime',
             direction: 'DESC'
           });
           const newFiles = response.data.content;

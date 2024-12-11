@@ -10,19 +10,19 @@ const FileViewer: React.FC<ViewerProps> = ({ file, onClose, onToggleBookmark }) 
           <video 
             controls 
             className="w-full h-full max-h-[calc(100vh-12rem)] object-contain"
-            src={file.url}
+            src={file.path}
           />
         );
       case 'music':
         return (
           <div className="w-full h-full flex items-center justify-center bg-gray-900 p-8">
-            <audio controls src={file.url} className="w-full max-w-2xl" />
+            <audio controls src={file.path} className="w-full max-w-2xl" />
           </div>
         );
       case 'image':
         return (
           <img 
-            src={file.url} 
+            src={file.path} 
             alt={file.name}
             className="w-full h-full max-h-[calc(100vh-12rem)] object-contain"
           />
@@ -30,7 +30,7 @@ const FileViewer: React.FC<ViewerProps> = ({ file, onClose, onToggleBookmark }) 
       case 'document':
         return (
           <iframe
-            src={file.url}
+            src={file.path}
             className="w-full h-full max-h-[calc(100vh-12rem)]"
             title={file.name}
           />

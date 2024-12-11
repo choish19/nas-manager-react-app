@@ -3,7 +3,7 @@ export interface FileType {
   name: string;
   type: string;
   thumbnail?: string;
-  lastAccessed: string;
+  lastWriteTime: string;
   path: string;
   bookmarked: boolean;
   bookmarkCount: number;

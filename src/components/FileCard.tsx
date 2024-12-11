@@ -77,7 +77,7 @@ export const FileCard: React.FC<FileCardProps> = ({ file, onSelect, onToggleBook
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="w-4 h-4" />
-                <span>{formatDate(file.lastAccessed, 'relative')}</span>
+                <span>{formatDate(file.lastWriteTime, 'relative')}</span>
               </div>
             </div>
           </div>

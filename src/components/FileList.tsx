@@ -59,7 +59,7 @@ const FileList: React.FC<FileListProps> = ({ files, onFileSelect, onToggleBookma
                         isDarkMode ? 'text-gray-400' : 'text-gray-500'
                       }`}>
                         <Clock className="w-4 h-4 mr-1" />
-                        <span>{formatDate(file.lastAccessed)}</span>
+                        <span>{formatDate(file.lastWriteTime)}</span>
                       </div>
                       {file.watchedAt && (
                         <div className={`flex items-center text-sm ${

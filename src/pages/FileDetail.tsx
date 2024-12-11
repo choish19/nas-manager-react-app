@@ -145,7 +145,7 @@ export function FileDetail() {
                 <p className={`text-sm ${
                   isDarkMode ? 'text-gray-400' : 'text-gray-500'
                 }`}>
-                  {formatDate(file.lastAccessed)}
+                  {formatDate(file.lastWriteTime)}
                 </p>
               </div>
 
@@ -228,7 +228,7 @@ export function FileDetail() {
                         <p className={`text-xs ${
                           isDarkMode ? 'text-gray-400' : 'text-gray-500'
                         }`}>
-                          {formatDate(recommendedFile.lastAccessed)}
+                          {formatDate(recommendedFile.lastWriteTime)}
                         </p>
                       </div>
                     </div>
